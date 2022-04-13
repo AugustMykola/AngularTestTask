@@ -1,0 +1,118 @@
+<div class="container">
+
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" id="form-user">
+  <div class="formgroupcomponent">
+
+    <label class="formlabel" for="firstname">Имя</label>
+    <input type="text" formControlName="firstname">
+    <div *ngIf="form.get('firstname')?.invalid && form.get('firstname')?.touched">
+        <p class="error" *ngIf="form.get('firstname')?.errors?.['pattern']"> Имя должно содержать только латинские буквы без пробелов </p>
+        <p class="error" *ngIf="form.get('firstname')?.errors?.['required']">Поле должно быть обязательно заполненное </p> 
+        <p class="error" *ngIf="form.get('firstname')?.errors?.['minimumlengthError']"> Имя должно составлять минимум 2 буквы </p>
+    </div>
+
+  </div>
+
+  <div  class="formgroupcomponent">
+    <label class="formlabel" for="lastname">Фамилия</label>
+    <input type="text" formControlName="lastname">
+    <div *ngIf="form.get('lastname')?.invalid && form.get('lastname')?.touched">
+        <p class="error" *ngIf="form.get('lastname')?.errors?.['pattern']"> Фамилия должна содержать только латинские буквы юез пробелов </p>
+        <p class="error" *ngIf="form.get('lastname')?.errors?.['required']">Поле должно быть обязательно заполненное </p> 
+        <p class="error" *ngIf="form.get('lastname')?.errors?.['maximumlengthError']">Фамилия должна состоять менее чем из 20 букв </p>
+
+    </div>
+  </div>
+
+  <div class="formgroupcomponent">
+    <mat-label class="formlabel" >Дата рождения</mat-label>
+    <input matInput [matDatepicker]="picker" id='dateOfTheBirth'  formControlName='dateOfTheBirth'>
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+    <p class="error"  *ngIf="form.get('dateOfTheBirth')?.invalid && form.get('dateOfTheBirth')?.touched">
+      Поле должно быть заполненым
+  </p>
+  </div>
+
+  <div  class="formgroupcomponent">
+    <label class="formlabel" for="framework">Фреймворк</label>
+    <select  formControlName="framework" >
+
+      <option *ngFor="let key of objectKeys(frameworks)" [value]="key">{{key}}</option>
+    </select> 
+    <p class="error"  *ngIf="form.get('framework')?.invalid && form.get('framework')?.touched">
+        Поле должно быть заполненым
+    </p>
+  </div>
+
+  <div  class="formgroupcomponent" *ngIf="!form.get('framework')?.invalid"> 
+      <label class="formlabel" for="frameworkVersion">Версия фреймворка</label>
+      <select  formControlName="frameworkVersion" >
+        <option *ngFor="let value of frameworks[form.get('framework')?.value]" [value]="value">{{value}}</option>
+      </select>
+      <p class="error"  *ngIf="form.get('frameworkVersion')?.invalid && form.get('frameworkVersion')?.touched">
+          Поле должно быть заполненым
+      </p>
+  </div>
+
+  <div  class="formgroupcomponent">
+    <label class="formlabel" for="email">E-mail</label>
+    <input type="email" formControlName="email">
+    <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+        <p class="error"  *ngIf="form.get('email')?.errors?.['email']"> Введите корректный E-mail </p>
+        <p class="error"  *ngIf="form.get('email')?.errors?.['required']">Поле должно быть обязательно заполненное </p>
+        <p class="error"  *ngIf="form.get('email')?.errors?.['emailIsUsed']">Такой E-mail уже сувществует </p> 
+    </div>
+  </div>
+
+  <div formArrayName="hobby" *ngFor="let o of hobby.controls; let i=index" class="formgroupcomponent" >
+    <div [formGroupName]="i">
+      <div >
+          <div class="formarraycomponent">
+              <label class="formlabel" for="name">Название хобби</label>
+              <input type="text" formControlName="name">
+              <div *ngIf="hobby.controls[i].get('name')?.invalid && hobby.controls[i].get('name')?.touched">
+                  <p class="error" *ngIf="hobby.controls[i].get('name')?.errors?.['pattern']"> Название хобби должно содержать только латинские буквы</p>
+                  <p class="error"  *ngIf="hobby.controls[i].get('name')?.errors?.['required']">Поле должно быть обязательно заполненное </p> 
+              </div>
+          </div>
+  
+            <div class="formarraycomponent">
+  
+                <label class="formlabel" for="duration">Продолжительность занятий</label>
+                <input type="text" formControlName="duration">
+                <div *ngIf="hobby.controls[i].get('duration')?.invalid && hobby.controls[i].get('duration')?.touched">
+                    <p class="error"  *ngIf="hobby.controls[i].get('duration')?.errors?.['pattern']"> 
+                      Название хобби должно содержать только латинские буквы и цифры
+                    </p>
+                    <p class="error"  *ngIf="hobby.controls[i].get('duration')?.errors?.['required']">Поле должно быть обязательно заполненное </p> 
+                </div>
+  
+              </div>
+              
+              <button type="button" *ngIf ="hobby.length > 1" (click)="removeHobby(i)">Удалить хобби</button>
+      </div>
+
+          
+    </div>
+  </div>
+
+
+  <div class="formgroupcomponent formbuttons">
+    <button type="button" [disabled]=hobby.invalid (click)="addnewHobby()">Добавить хобби</button>
+    <button type="submit" [disabled]=form.invalid>Сохранить данные</button>
+  </div>
+
+
+</form>
+
+<hr/>
+<div class="container__data"> Данные которые отправляются на сервер: {{form.value|json}}</div>
+<div class="container__ps">
+  Примечаение: в данной работе представлен блок который  описывает какие данные будут отпралены на сервер. 
+  В графе dateOfTheBirth передается обычный формат времени. Однако в данной работе присувствует дата-пайп, который преорбразует формат в "год-месяц-день".
+  И если посмотреть в консоль дата отобраежтся правильно.
+</div>
+</div>
+
